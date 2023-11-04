@@ -37,18 +37,34 @@ function createBaseList() {
     })
   }
 
+  function isValidForBase(input, base) {
+    var validChars = '0123456789ABCDEF'.slice(0, base);
+    var regex = new RegExp('^[' + validChars + ']+$', 'i');
+    return regex.test(input);
+  }
+
   state.output = computed(() => {
-    // TODO leerzeichen noch prüfen
-    // TODO negative zahlen
-    // binär 123 zu dezimal spinnt u.a.
 
     if (state.input === "") {
       state.inputInvalid = false
       return ""
     }
+
+    if (state.inputBase > 16 || state.inputBase < 2 || state.outputBase > 16 || state.outputBase < 2) {
+      state.inputInvalid = true
+      return ""
+    }
+
+    if (!isValidForBase(state.input, state.inputBase)) {
+      state.inputInvalid = true
+      return ""
+    }
+
     let decimal = parseInt(state.input, state.inputBase)
     let result = decimal.toString(state.outputBase)
+
     console.log(decimal, result)
+
     if (result === "NaN") {
       state.inputInvalid = true
       return ""
