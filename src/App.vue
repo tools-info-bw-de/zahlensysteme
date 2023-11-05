@@ -82,7 +82,7 @@ state.output = computed(() => {
     return ""
   }
   state.inputInvalid = false
-  return result
+  return result.toUpperCase()
 })
 
 
@@ -110,7 +110,7 @@ function explainTo10() {
     let digit = parseInt(state.input[i], state.inputBase)
     let power = state.input.length - i - 1
     let maxLength = getMaxLength(digit, state.inputBase, power)
-    let newSum = `${digit} * ${state.inputBase}^${power} + `
+    let newSum = `${digit} \u2219 ${state.inputBase}^${power} + `
     result += newSum.padStart(maxLength + 3, " ")
   }
 
@@ -122,7 +122,7 @@ function explainTo10() {
     let digit = parseInt(state.input[i], state.inputBase)
     let power = state.input.length - i - 1
     let maxLength = getMaxLength(digit, state.inputBase, power)
-    let newSum = `${digit} * ${state.inputBase ** power} + `
+    let newSum = `${digit} \u2219 ${state.inputBase ** power} + `
     result += newSum.padStart(maxLength + 3, " ")
   }
 
@@ -175,6 +175,52 @@ function explainDecToBin() {
   return result
 }
 
+function explainBinToHex() {
+  let result = "1. Teile die Binärzahl in 4er-Blöcke auf, wobei von hinten (!) die Blockbildung begonnen wird:\n"
+  result += "(2. Wandle jeden 4er-Block in eine Dezimalziffer um:)\n"
+  result += "3. Wandle jeden 4er-Block in eine Hexadezimalziffer um:\n\n"
+  let paddedInput = state.input.padStart(Math.ceil(state.input.length / 4) * 4, " ")
+
+  result += "Bin: "
+  result += paddedInput.match(/.{1,4}/g).join(" ")
+  result += "\n     "
+
+  let amountOfBlocks = Math.ceil(state.input.length / 4)
+  for (let i = 0; i < amountOfBlocks; i++) {
+    result += "¯¯¯¯ "
+  }
+  result += "\n     "
+
+  for (let i = 0; i < amountOfBlocks; i++) {
+    result += "   ↓ "
+  }
+  result += "\nDez: "
+
+  let blocks = paddedInput.match(/.{1,4}/g)
+  for (let i = 0; i < blocks.length; i++) {
+    let block = blocks[i]
+    let decimal = parseInt(block, 2)
+    result += " ".repeat((decimal >= 10) ? 2 : 3)
+    result += decimal.toString()
+    result += " "
+  }
+  result += "\n     "
+
+  for (let i = 0; i < amountOfBlocks; i++) {
+    result += "   ↓ "
+  }
+  result += "\nHex: "
+
+  for (let i = 0; i < blocks.length; i++) {
+    let block = blocks[i]
+    let decimal = parseInt(block, 2)
+    let hex = decimal.toString(16).toUpperCase()
+    result += `   ${hex} `
+  }
+
+  return result
+}
+
 state.explainText = computed(() => {
   if (state.input === "" || state.inputInvalid) {
     return ""
@@ -190,9 +236,13 @@ state.explainText = computed(() => {
     return explainDecToBin()
   }
 
+  // binär zu hexadezimal
+  if (state.inputBase === 2 && state.outputBase === 16) {
+    return explainBinToHex()
+  }
+
   // dezimal zu oktal?
   // dezimal zu hexadezimal
-  // binär zu hexadezimal
   // hexadezimal zu binär
   // binär zu hexa?? und umgekehrt?
   // oktal zu hexa?? und umgekehrt?
