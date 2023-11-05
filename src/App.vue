@@ -221,6 +221,35 @@ function explainBinToHex() {
   return result
 }
 
+function explainHexToBin() {
+  let result = "1. Wandle jede Hexadezimalziffer in eine 4-stellige Binärzahl um:\n"
+  result += "2. Füge die Binärzahlen zusammen:\n\n"
+
+  result += "Hex:    "
+  result += state.input.split("").join("    ")
+  result += "\n     "
+
+  for (let i = 0; i < state.input.length; i++) {
+    result += "   ↓ "
+  }
+  result += "\nBin: "
+
+  for (let i = 0; i < state.input.length; i++) {
+    let hex = state.input[i]
+    let decimal = parseInt(hex, 16)
+    let binary = decimal.toString(2).padStart(4, "0")
+    result += `${binary} `
+  }
+  result += "\nBin: "
+  let paddedOutputZero = state.output.padStart(Math.ceil(state.output.length / 4) * 4, "0")
+  result += paddedOutputZero
+  result += "\nBin: "
+  let paddedOutputWhitespace = state.output.padStart(Math.ceil(state.output.length / 4) * 4, " ")
+  result += paddedOutputWhitespace
+
+  return result
+}
+
 state.explainText = computed(() => {
   if (state.input === "" || state.inputInvalid) {
     return ""
@@ -241,9 +270,14 @@ state.explainText = computed(() => {
     return explainBinToHex()
   }
 
+  // hexadezimal zu binär
+  if (state.inputBase === 16 && state.outputBase === 2) {
+    return explainHexToBin()
+  }
+
   // dezimal zu oktal?
   // dezimal zu hexadezimal
-  // hexadezimal zu binär
+
   // binär zu hexa?? und umgekehrt?
   // oktal zu hexa?? und umgekehrt?
 
