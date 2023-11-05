@@ -142,7 +142,7 @@ function explainToDec() {
   result += "\n= "
 
   let lineLength = result.split("\n")[0].length
-  result += " ".repeat(lineLength - state.output.length - 2)
+  result += " ".repeat(lineLength - parseInt(state.input, state.inputBase).toString().length - 2)
 
   result += parseInt(state.input, state.inputBase)
 
@@ -174,9 +174,9 @@ function explainDecToBin() {
 }
 
 function explainBinToHex() {
-  let result = "1. Teile die Binärzahl in 4er-Blöcke auf, wobei von hinten (!) die Blockbildung begonnen wird:\n"
-  result += "(2. Wandle jeden 4er-Block in eine Dezimalziffer um:)\n"
-  result += "3. Wandle jeden 4er-Block in eine Hexadezimalziffer um:\n\n"
+  let result = "1. Teile die Binärzahl in 4er-Blöcke auf, wobei von hinten (!) die Blockbildung begonnen wird.\n"
+  result += "(2. Wandle jeden 4er-Block in eine Dezimalziffer um.)\n"
+  result += "3. Wandle jeden 4er-Block in eine Hexadezimalziffer um.\n\n"
   let paddedInput = state.input.padStart(Math.ceil(state.input.length / 4) * 4, " ")
 
   result += "Bin: "
@@ -220,8 +220,8 @@ function explainBinToHex() {
 }
 
 function explainHexToBin() {
-  let result = "1. Wandle jede Hexadezimalziffer in eine 4-stellige Binärzahl um:\n"
-  result += "2. Füge die Binärzahlen zusammen:\n\n"
+  let result = "1. Wandle jede Hexadezimalziffer in eine 4-stellige Binärzahl um.\n"
+  result += "2. Füge die Binärzahlen zusammen.\n\n"
 
   result += "Hex:    "
   result += state.input.split("").join("    ")
@@ -241,9 +241,12 @@ function explainHexToBin() {
   result += "\nBin: "
   let paddedOutputZero = state.output.padStart(Math.ceil(state.output.length / 4) * 4, "0")
   result += paddedOutputZero
-  result += "\nBin: "
-  let paddedOutputWhitespace = state.output.padStart(Math.ceil(state.output.length / 4) * 4, " ")
-  result += paddedOutputWhitespace
+
+  if (state.output.length % 4 !== 0) {
+    result += "\nBin: "
+    let paddedOutputWhitespace = state.output.padStart(Math.ceil(state.output.length / 4) * 4, " ")
+    result += paddedOutputWhitespace
+  }
 
   return result
 }
@@ -268,6 +271,69 @@ function explainFromDec() {
   }
 
   result += `\nResultat: ${state.output}`
+
+  return result
+}
+
+function explainBinToOct() {
+  let result = "1. Teile die Binärzahl in 3er-Blöcke auf, wobei von hinten (!) die Blockbildung begonnen wird.\n"
+  result += "2. Wandle jeden 3er-Block in eine Oktal- bzw. Dezimalziffer um.\n\n"
+  let paddedInput = state.input.padStart(Math.ceil(state.input.length / 3) * 3, " ")
+
+  result += "Bin: "
+  result += paddedInput.match(/.{1,3}/g).join(" ")
+  result += "\n     "
+
+  let amountOfBlocks = Math.ceil(state.input.length / 3)
+  for (let i = 0; i < amountOfBlocks; i++) {
+    result += "¯¯¯ "//↧‾▔¯
+  }
+  result += "\n     "
+
+  let blocks = paddedInput.match(/.{1,3}/g)
+  for (let i = 0; i < amountOfBlocks; i++) {
+    result += "  ↓ "
+  }
+  result += "\nOkt: "
+
+  for (let i = 0; i < blocks.length; i++) {
+    let block = blocks[i]
+    let decimal = parseInt(block, 2)
+    let oct = decimal.toString(8).toUpperCase()
+    result += `  ${oct} `
+  }
+
+  return result
+}
+
+function explainOctToBin() {
+  let result = "1. Wandle jede Oktalziffer in eine 3-stellige Binärzahl um.\n"
+  result += "2. Füge die Binärzahlen zusammen.\n\n"
+
+  result += "Okt:   "
+  result += state.input.split("").join("   ")
+  result += "\n     "
+
+  for (let i = 0; i < state.input.length; i++) {
+    result += "  ↓ "
+  }
+  result += "\nBin: "
+
+  for (let i = 0; i < state.input.length; i++) {
+    let oct = state.input[i]
+    let decimal = parseInt(oct, 8)
+    let binary = decimal.toString(2).padStart(3, "0")
+    result += `${binary} `
+  }
+  result += "\nBin: "
+  let paddedOutputZero = state.output.padStart(Math.ceil(state.output.length / 3) * 3, "0")
+  result += paddedOutputZero
+
+  if (state.output.length % 3 !== 0) {
+    result += "\nBin: "
+    let paddedOutputWhitespace = state.output.padStart(Math.ceil(state.output.length / 3) * 3, " ")
+    result += paddedOutputWhitespace
+  }
 
   return result
 }
@@ -300,6 +366,16 @@ state.explainText = computed(() => {
   // hexadezimal zu binär
   if (state.inputBase === 16 && state.outputBase === 2) {
     return explainHexToBin()
+  }
+
+  // binär zu oktal
+  if (state.inputBase === 2 && state.outputBase === 8) {
+    return explainBinToOct()
+  }
+
+  // oktal zu binär
+  if (state.inputBase === 8 && state.outputBase === 2) {
+    return explainOctToBin()
   }
 
   // else
@@ -372,7 +448,7 @@ state.explainText = computed(() => {
   </div>
   <div v-if="state.explain" class="row">
     <div class="col">
-      <textarea class="form-control explainTextarea" :value="state.explainText" cols="30" rows="10" readonly></textarea>
+      <textarea class="form-control explainTextarea" :value="state.explainText" cols="30" rows="15" readonly></textarea>
     </div>
   </div>
 </template>
