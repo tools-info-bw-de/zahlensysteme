@@ -49,7 +49,7 @@ function isValidForBase(input, base) {
 
 state.output = computed(() => {
 
-  if (state.input === "") {
+  if (state.input.replace(/^0+/, "") === "") {
     state.inputInvalid = false
     return ""
   }
@@ -70,7 +70,8 @@ state.output = computed(() => {
   // reverse-check 
   let reverse = parseInt(result, state.outputBase)
   let reverseFinal = reverse.toString(state.inputBase)
-  if (reverseFinal.toUpperCase() !== state.input.toUpperCase()) {
+  let trimmedInput = state.input.replace(/^0+/, "")
+  if (reverseFinal.toUpperCase() !== trimmedInput.toUpperCase()) {
     state.inputInvalid = true
     state.inputTooBig = true
     return ""
