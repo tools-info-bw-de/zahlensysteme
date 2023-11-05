@@ -102,7 +102,7 @@ function getMaxLength(digit, base, power) {
   return Math.max(result, calc1, calc2)
 }
 
-function explainTo10() {
+function explainToDec() {
   let result = "  "
 
   // 2 * 10^4 + 3 * 10^3 + ...
@@ -144,7 +144,7 @@ function explainTo10() {
   let lineLength = result.split("\n")[0].length
   result += " ".repeat(lineLength - state.output.length - 2)
 
-  result += state.output
+  result += parseInt(state.input, state.inputBase)
 
   return result
 }
@@ -250,19 +250,49 @@ function explainHexToBin() {
   return result
 }
 
+function explainFromDec() {
+  let result = ""
+
+  let decimal = parseInt(state.input, state.inputBase)
+  let max1 = state.input.length
+  let max2 = Math.floor(decimal / state.outputBase).toString().length
+
+  while (decimal !== 0) {
+    let rest = decimal % state.outputBase
+    let newLine = " ".repeat(max1 - decimal.toString().length)
+    newLine += decimal.toString()
+    newLine += ` : ${state.outputBase} = `
+    console.log(Math.floor(decimal / state.outputBase), max2 - (Math.floor(decimal / state.outputBase).toString().length))
+    newLine += " ".repeat(max2 - (Math.floor(decimal / state.outputBase).toString().length))
+    newLine += `${Math.floor(decimal / state.outputBase)}`
+    newLine += ` Rest ${rest}\n`
+    result += newLine
+    decimal = Math.floor(decimal / state.outputBase)
+  }
+
+  result += `\nResultat: ${state.output}`
+
+  return result
+}
+
 state.explainText = computed(() => {
-  if (state.input === "" || state.inputInvalid) {
+  if (state.input === "" || state.inputInvalid || state.inputBase == state.outputBase) {
     return ""
   }
 
   // irgendwas zu dezimal
   if (state.outputBase === 10) {
-    return explainTo10()
+    return explainToDec()
   }
 
   // dezimal zu binär
   if (state.inputBase === 10 && state.outputBase === 2) {
     return explainDecToBin()
+  }
+
+  // irgendwas von dezimal
+  if (state.inputBase === 10) {
+    return explainFromDec()
   }
 
   // binär zu hexadezimal
@@ -275,13 +305,13 @@ state.explainText = computed(() => {
     return explainHexToBin()
   }
 
-  // dezimal zu oktal?
-  // dezimal zu hexadezimal
-
-  // binär zu hexa?? und umgekehrt?
-  // oktal zu hexa?? und umgekehrt?
-
-  // und sonst: erst zu dezimal und dann weiter
+  // else
+  let result = "Rechne es zuerst in Dezimal um:\n\n"
+  result += explainToDec()
+  result += "\n\n"
+  result += "Rechne es dann von Dezimal in das gewünschte Zahlensystem um:\n\n"
+  result += explainFromDec()
+  return result
 })
 
 </script>
