@@ -44,7 +44,7 @@ function createBaseList() {
 function isValidForBase(input, base) {
   var validChars = '0123456789ABCDEF'.slice(0, base);
   var regex = new RegExp('^[' + validChars + ']+$', 'i');
-  return regex.test(input);
+  return regex.test(input.toUpperCase());
 }
 
 state.output = computed(() => {
@@ -70,7 +70,7 @@ state.output = computed(() => {
   // reverse-check 
   let reverse = parseInt(result, state.outputBase)
   let reverseFinal = reverse.toString(state.inputBase)
-  if (reverseFinal !== state.input) {
+  if (reverseFinal.toUpperCase() !== state.input.toUpperCase()) {
     state.inputInvalid = true
     state.inputTooBig = true
     return ""
@@ -155,14 +155,12 @@ function explainDecToBin() {
   let decimal = parseInt(state.input, state.inputBase)
   let max1 = state.input.length
   let max2 = Math.floor(decimal / 2).toString().length
-  console.log(max1, max2)
 
   while (decimal !== 0) {
     let rest = decimal % 2
     let newLine = " ".repeat(max1 - decimal.toString().length)
     newLine += decimal.toString()
     newLine += " : 2 = "
-    console.log(Math.floor(decimal / 2), max2 - (Math.floor(decimal / 2).toString().length))
     newLine += " ".repeat(max2 - (Math.floor(decimal / 2).toString().length))
     newLine += `${Math.floor(decimal / 2)}`
     newLine += ` Rest ${rest}\n`
@@ -262,7 +260,6 @@ function explainFromDec() {
     let newLine = " ".repeat(max1 - decimal.toString().length)
     newLine += decimal.toString()
     newLine += ` : ${state.outputBase} = `
-    console.log(Math.floor(decimal / state.outputBase), max2 - (Math.floor(decimal / state.outputBase).toString().length))
     newLine += " ".repeat(max2 - (Math.floor(decimal / state.outputBase).toString().length))
     newLine += `${Math.floor(decimal / state.outputBase)}`
     newLine += ` Rest ${rest}\n`
