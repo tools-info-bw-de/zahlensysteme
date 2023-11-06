@@ -443,7 +443,7 @@ state.explainText = computed(() => {
     <div class="col">
       <div class="form-check form-switch d-flex align-items-center">
         <input class="form-check-input ms-0" v-model="state.explain" type="checkbox" role="switch" id="explainSwitch">
-        <label class="form-check-label ms-2" for="explainSwitch">Umrechnung erklären</label>
+        <label class="form-check-label ms-2" for="explainSwitch">Erklärung anzeigen</label>
       </div>
     </div>
   </div>
