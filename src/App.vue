@@ -395,7 +395,7 @@ state.explainText = computed(() => {
     <div class="ioBox col-md-12 col-lg-5 d-flex flex-column">
       <div class="labelInputOutput">Eingabe</div>
       <div class="d-flex flex-row">
-        <div class="form-floating select-width">
+        <div class="form-floating">
           <select class="form-select select-lg" id="inputList" v-model="state.inputBase">
             <option v-for="b in baseList" :value="b.base">{{ b.name }}</option>
           </select>
@@ -455,7 +455,6 @@ state.explainText = computed(() => {
 
 <style scoped>
 .select-lg {
-  /* font-size: 1.5rem; */
   height: 75px;
 }
 
