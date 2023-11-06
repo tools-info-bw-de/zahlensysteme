@@ -256,12 +256,11 @@ function explainFromDec() {
   let result = ""
 
   let decimal = parseInt(state.input, state.inputBase)
-  let max1 = state.input.length
   let max2 = Math.floor(decimal / state.outputBase).toString().length
 
   while (decimal !== 0) {
     let rest = decimal % state.outputBase
-    let newLine = " ".repeat(max1 - decimal.toString().length)
+    let newLine = " ".repeat(parseInt(state.input, state.inputBase).toString().length - decimal.toString().length)
     newLine += decimal.toString()
     newLine += ` : ${state.outputBase} = `
     newLine += " ".repeat(max2 - (Math.floor(decimal / state.outputBase).toString().length))
@@ -396,8 +395,8 @@ state.explainText = computed(() => {
     <div class="ioBox col-md-12 col-lg-5 d-flex flex-column">
       <div class="labelInputOutput">Eingabe</div>
       <div class="d-flex flex-row">
-        <div class="form-floating">
-          <select class="form-select" id="inputList" v-model="state.inputBase">
+        <div class="form-floating select-width">
+          <select class="form-select select-lg" id="inputList" v-model="state.inputBase">
             <option v-for="b in baseList" :value="b.base">{{ b.name }}</option>
           </select>
           <label for="inputList">Zahlensystem</label>
@@ -405,7 +404,7 @@ state.explainText = computed(() => {
 
         <div class="ms-2 flex-fill d-flex flex-column">
           <div class="form-floating">
-            <input type="text" class="form-control" :class="{ redBorder: state.inputInvalid }" id="input"
+            <input type="text" class="form-control input-lg" :class="{ redBorder: state.inputInvalid }" id="input"
               placeholder="Eingabe" autofocus v-model="state.input">
             <label for="input">Eingabe</label>
           </div>
@@ -427,7 +426,7 @@ state.explainText = computed(() => {
       <div class="labelInputOutput">Ausgabe</div>
       <div class="d-flex flex-row">
         <div class="form-floating">
-          <select class="form-select" id="outputList" v-model="state.outputBase">
+          <select class="form-select select-lg" id="outputList" v-model="state.outputBase">
             <option v-for="b in baseList" :value="b.base">{{ b.name }}</option>
           </select>
           <label for="outputList">Zahlensystem</label>
@@ -455,6 +454,15 @@ state.explainText = computed(() => {
 </template>
 
 <style scoped>
+.select-lg {
+  /* font-size: 1.5rem; */
+  height: 75px;
+}
+
+.input-lg {
+  height: 75px;
+}
+
 .explainTextarea {
   font-family: monospace;
   white-space: pre;
