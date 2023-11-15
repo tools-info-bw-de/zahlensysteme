@@ -1,8 +1,9 @@
 <script setup>
 import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap"
+import { Popover } from "bootstrap"
 
-import { reactive, onBeforeMount, computed } from "vue"
+import { reactive, onBeforeMount, computed, onMounted } from "vue"
 
 const state = reactive({
   inputBase: 2,
@@ -20,6 +21,15 @@ let baseList = []
 onBeforeMount(() => {
   createBaseList();
 });
+
+onMounted(() => {
+  const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+  const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new Popover(popoverTriggerEl, {
+    html: true,
+    sanitize: false,
+    trigger: "focus",
+  }))
+})
 
 function createBaseList() {
   baseList = []
@@ -390,16 +400,20 @@ state.explainText = computed(() => {
 </script>
 
 <template>
+  <button type="button" class="infoBtn btn btn-outline-dark btn-sm" data-bs-container="body" data-bs-toggle="popover"
+    data-bs-placement="bottom"
+    data-bs-content='Quellcode auf <a href="https://github.com/tools-info-bw-de/zahlensysteme" target="_blank">github</a>!<br>§ MIT - Marco Kümmel'>info</button>
+
   <h1 class="mb-4">Zahlensystem-Konverter</h1>
   <div class="row">
     <div class="ioBox col-md-12 col-lg-5 d-flex flex-column">
       <div class="labelInputOutput">Eingabe</div>
-      <div class="d-flex flex-row">
+      <div class="d-flex flexSwitch">
         <div class="form-floating">
           <select class="form-select select-lg" id="inputList" v-model="state.inputBase">
             <option v-for="b in baseList" :value="b.base">{{ b.name }}</option>
           </select>
-          <label for="inputList">Zahlensystem</label>
+          <label class="selectLabel" for="inputList">Zahlensystem</label>
         </div>
 
         <div class="ms-2 flex-fill d-flex flex-column">
@@ -424,16 +438,16 @@ state.explainText = computed(() => {
     </div>
     <div class="ioBox col-sm-12 col-lg-5 d-flex flex-column">
       <div class="labelInputOutput">Ausgabe</div>
-      <div class="d-flex flex-row">
+      <div class="d-flex flexSwitch">
         <div class="form-floating">
           <select class="form-select select-lg" id="outputList" v-model="state.outputBase">
             <option v-for="b in baseList" :value="b.base">{{ b.name }}</option>
           </select>
-          <label for="outputList">Zahlensystem</label>
+          <label class="selectLabel" for="outputList">Zahlensystem</label>
         </div>
 
         <div class="ms-2 flex-fill d-flex flex-column">
-          <textarea class="form-control output" :value="state.output" cols="30" rows="2" readonly></textarea>
+          <textarea class="form-control output" :value="state.output" cols="25" rows="2" readonly></textarea>
         </div>
       </div>
     </div>
@@ -454,6 +468,33 @@ state.explainText = computed(() => {
 </template>
 
 <style scoped>
+@media screen and (max-width: 400px) {
+  .flexSwitch {
+    flex-direction: column;
+  }
+
+  .select-lg {
+    margin-left: 8px;
+    width: inherit;
+  }
+
+  .selectLabel {
+    margin-left: 8px;
+  }
+}
+
+@media screen and (min-width: 401px) {
+  .flexSwitch {
+    flex-direction: row;
+  }
+}
+
+.infoBtn {
+  position: absolute;
+  top: 10px !important;
+  right: 10px !important;
+}
+
 .select-lg {
   height: 75px;
 }
